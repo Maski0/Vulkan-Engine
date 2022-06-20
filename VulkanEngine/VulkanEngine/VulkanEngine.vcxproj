@@ -147,14 +147,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppOne.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="Vulkan_device.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
-    <None Include="shaders\frag.spv" />
-    <None Include="shaders\shader.frag" />
-    <None Include="shaders\shader.vert" />
-    <None Include="shaders\vert.spv" />
+    <None Include="shaders\Base_shader.frag" />
+    <None Include="shaders\Base_shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AppOne.h" />
+    <ClInclude Include="pipeline.h" />
+    <ClInclude Include="Vulkan_device.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
