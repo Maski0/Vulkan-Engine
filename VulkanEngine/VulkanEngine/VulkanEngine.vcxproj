@@ -149,7 +149,9 @@
   <ItemGroup>
     <ClCompile Include="AppOne.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EngineModel.cpp" />
     <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Vulkan_device.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -160,7 +162,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppOne.h" />
+    <ClInclude Include="EngineModel.h" />
     <ClInclude Include="pipeline.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Vulkan_device.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

@@ -6,7 +6,7 @@
 
 int main()
 {
-	Dyna::firstApp app{};
+	Dyna::BasicApp app{};
 
 	try {
 		app.run();
