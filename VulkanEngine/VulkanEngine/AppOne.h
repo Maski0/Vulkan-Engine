@@ -4,7 +4,7 @@
 #include "pipeline.h"
 #include "Vulkan_device.h"
 #include "SwapChain.h"
-
+#include "EngineModel.h"
 //std
 #include <memory>
 #include <vector>
@@ -25,6 +25,13 @@ namespace Dyna
 
 		void run();
 	private:
+		void sierpinski(
+			std::vector<EngineModel::Vertex>& vertices,
+			int depth,
+			glm::vec2 left,
+			glm::vec2 right,
+			glm::vec2 top);
+		void loadModels();
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
@@ -40,6 +47,7 @@ namespace Dyna
 			Pipeline::defaultPipelineConfigInfo(Width,Height) };*/
 
 		std::unique_ptr<Pipeline> appPipeline;
+		std::unique_ptr<EngineModel> appModel;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;
 	};

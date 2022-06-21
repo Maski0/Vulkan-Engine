@@ -7,6 +7,7 @@ namespace Dyna
 {
 	BasicApp::BasicApp()
 	{
+		loadModels();
 		createPipelineLayout();
 		createPipeline();
 		createCommandBuffers();
@@ -24,6 +25,33 @@ namespace Dyna
 		}
 
 		vkDeviceWaitIdle(appDevice.device());
+	}
+	void BasicApp::sierpinski(std::vector<EngineModel::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top)
+	{
+		if (depth <= 0) {
+			vertices.push_back({ top });
+			vertices.push_back({ right });
+			vertices.push_back({ left });
+		}
+		else {
+			auto leftTop = 0.5f * (left + top);
+			auto rightTop = 0.5f * (right + top);
+			auto leftRight = 0.5f * (left + right);
+			sierpinski(vertices, depth - 1, left, leftRight, leftTop);
+			sierpinski(vertices, depth - 1, leftRight, right, rightTop);
+			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
+		}
+	}
+	void BasicApp::loadModels()
+	{
+		/*std::vector<EngineModel::Vertex> vertices{
+			{{0.0f,-0.5f}},
+			{{0.5f, 0.5f}},
+			{{-0.5f,0.5f}}
+		};*/
+		std::vector<EngineModel::Vertex> vertices{};
+		sierpinski(vertices, 5, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });
+		appModel = std::make_unique<EngineModel>(appDevice, vertices);
 	}
 	void BasicApp::createPipelineLayout()
 	{
@@ -98,7 +126,8 @@ namespace Dyna
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			appPipeline->bind(commandBuffers[i]);
-			vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+			appModel->bind(commandBuffers[i]);
+			appModel->draw(commandBuffers[i]);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
