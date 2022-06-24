@@ -41,41 +41,76 @@ namespace Dyna
 
 		vkDeviceWaitIdle(appDevice.device());
 	}
-	void BasicApp::sierpinski(std::vector<EngineModel::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top)
-	{
-		if (depth <= 0) {
-			vertices.push_back({ top });
-			vertices.push_back({ right });
-			vertices.push_back({ left });
+
+	// temporary helper function, creates a 1x1x1 cube centered at offset
+	std::unique_ptr<EngineModel> createCubeModel(EngineDevice& device, glm::vec3 offset) {
+		std::vector<EngineModel::Vertex> vertices{
+
+			// left face (white)
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+			// right face (yellow)
+			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+
+			// top face (orange, remember y axis points down)
+			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+
+			// bottom face (red)
+			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+
+			// nose face (blue)
+			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+
+			// tail face (green)
+			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+
+		};
+		for (auto& v : vertices) {
+			v.position += offset;
 		}
-		else {
-			auto leftTop = 0.5f * (left + top);
-			auto rightTop = 0.5f * (right + top);
-			auto leftRight = 0.5f * (left + right);
-			sierpinski(vertices, depth - 1, left, leftRight, leftTop);
-			sierpinski(vertices, depth - 1, leftRight, right, rightTop);
-			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
-		}
+		return std::make_unique<EngineModel>(device, vertices);
 	}
+
+
+	
 	void BasicApp::loadGameEntitys()
 	{
-		std::vector<EngineModel::Vertex> vertices{
-			{{0.0f,-0.5f}, {1.0f,0.0f,0.0f}},
-			{{0.5f, 0.5f}, {0.0f,1.0f,0.0f}},
-			{{-0.5f,0.5f}, {0.0f,0.0f,1.0f}}
-		};
-		/*std::vector<EngineModel::Vertex> vertices{};
-		sierpinski(vertices, 0, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });*/
-		auto appModel = std::make_shared<EngineModel>(appDevice, vertices);
-
-		auto triangle = GameEntity::createGameEntity();
-		triangle.model = appModel;
-		triangle.color = { 0.1f,0.8f,0.1f };
-		triangle.transform2d.translation.x = .2f;
-		triangle.transform2d.scale = { 2.0f,0.5f };
-		triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-		gameObjects.push_back(std::move(triangle));
+		std::shared_ptr<EngineModel> lveModel = createCubeModel(appDevice, { .0f, .0f, .0f });
+		auto cube = GameEntity::createGameEntity();
+		cube.model = lveModel;
+		cube.transform.translation = { .0f, .0f, .5f };
+		cube.transform.scale = { .5f, .5f, .5f };
+		gameObjects.push_back(std::move(cube));
 	}
 	
 }
