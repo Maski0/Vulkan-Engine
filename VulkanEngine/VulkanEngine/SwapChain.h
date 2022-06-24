@@ -5,6 +5,7 @@
 
 #include<string>
 #include<vector>
+#include<memory>
 
 namespace Dyna
 {
@@ -13,10 +14,11 @@ namespace Dyna
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         EngineSwapChain(EngineDevice& deviceRef, VkExtent2D windowExtent);
+        EngineSwapChain(EngineDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<EngineSwapChain> previous);
         ~EngineSwapChain();
 
         EngineSwapChain(const EngineSwapChain&) = delete;
-        void operator=(const EngineSwapChain&) = delete;
+        EngineSwapChain& operator=(const EngineSwapChain&) = delete;
 
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
@@ -27,7 +29,8 @@ namespace Dyna
         uint32_t width() { return swapChainExtent.width; }
         uint32_t height() { return swapChainExtent.height; }
 
-        float extentAspectRatio() {
+        float extentAspectRatio() 
+        {
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
         VkFormat findDepthFormat();
@@ -35,7 +38,14 @@ namespace Dyna
         VkResult acquireNextImage(uint32_t* imageIndex);
         VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
+        bool compareSwapFormats(const EngineSwapChain& swapChain) const 
+        {
+            return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
+                swapChain.swapChainImageFormat == swapChainImageFormat;
+        }
+
     private:
+        void init();
         void createSwapChain();
         void createImageViews();
         void createDepthResources();
@@ -51,6 +61,7 @@ namespace Dyna
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
         VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent;
 
         std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -66,6 +77,7 @@ namespace Dyna
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
+        std::shared_ptr<EngineSwapChain> oldSwapChain;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;

@@ -1,10 +1,9 @@
 #pragma once
 
 #include "window.h"
-#include "pipeline.h"
 #include "Vulkan_device.h"
-#include "SwapChain.h"
-#include "EngineModel.h"
+#include "EngineRenderer.h"
+#include "GameEntity.h"
 //std
 #include <memory>
 #include <vector>
@@ -31,24 +30,13 @@ namespace Dyna
 			glm::vec2 left,
 			glm::vec2 right,
 			glm::vec2 top);
-		void loadModels();
-		void createPipelineLayout();
-		void createPipeline();
-		void createCommandBuffers();
-		void drawFrame();
+		void loadGameEntitys();
 
-		Window appwindow{ Width,Height,"Dyna App" };
+		EngineWindow appwindow{ Width,Height,"Dyna App" };
 		EngineDevice appDevice{ appwindow };
-		EngineSwapChain appSwapChain{ appDevice,appwindow.getExtent() };
-		/*Pipeline appPipeline{ 
-			appDevice,
-			"shaders/Base_shader.vert.spv",
-			"shaders/Base_shader.frag.spv", 
-			Pipeline::defaultPipelineConfigInfo(Width,Height) };*/
+		EngineRenderer appRenderer{ appwindow,appDevice };
 
-		std::unique_ptr<Pipeline> appPipeline;
-		std::unique_ptr<EngineModel> appModel;
-		VkPipelineLayout pipelineLayout;
-		std::vector<VkCommandBuffer> commandBuffers;
+		std::vector<GameEntity> gameObjects;
+
 	};
 }

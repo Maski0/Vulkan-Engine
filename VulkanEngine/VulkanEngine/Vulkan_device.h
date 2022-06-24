@@ -30,12 +30,12 @@ namespace Dyna
         const bool enableValidationLayers = true;
 #endif
 
-        EngineDevice(Window& window);
+        EngineDevice(EngineWindow& window);
         ~EngineDevice();
 
         // Not copyable or movable
         EngineDevice(const EngineDevice&) = delete;
-        void operator=(const EngineDevice&) = delete;
+        EngineDevice& operator=(const EngineDevice&) = delete;
         EngineDevice(EngineDevice&&) = delete;
         EngineDevice& operator=(EngineDevice&&) = delete;
 
@@ -93,7 +93,7 @@ namespace Dyna
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        Window& window;
+        EngineWindow& window;
         VkCommandPool commandPool;
 
         VkDevice device_;

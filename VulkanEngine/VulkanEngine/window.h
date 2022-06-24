@@ -6,25 +6,31 @@
 
 namespace Dyna
 {
-	class Window 
+	class EngineWindow 
 	{
 	public:
-		Window(int widht, int height, std::string name);
-		~Window();
+		EngineWindow(int widht, int height, std::string name);
+		~EngineWindow();
 
-		Window(const Window &) = delete;
-		Window &operator=(const Window &) = delete;
+		EngineWindow(const EngineWindow&) = delete;
+		EngineWindow&operator=(const EngineWindow &) = delete;
 
 		bool shouldClose();
 
 		VkExtent2D getExtent() { return { static_cast<uint32_t>(WIDTH),static_cast<uint32_t>(HEIGHT) }; }
 
+		bool wasWindowResized() { return frameBufferResized; }
+		void resetWindowResizedFlag() { frameBufferResized = false; }
+
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 	private:
+		static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
 		void initWindow();
 		
-		const int WIDTH;
-		const int HEIGHT;
+		int WIDTH;
+		int HEIGHT;
+
+		bool frameBufferResized = false;
 
 		std::string windowName;
 		GLFWwindow* window;

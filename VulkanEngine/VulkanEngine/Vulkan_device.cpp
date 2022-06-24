@@ -47,7 +47,7 @@ namespace Dyna
     }
 
     // class member functions
-    EngineDevice::EngineDevice(Window& window) : window{ window } {
+    EngineDevice::EngineDevice(EngineWindow& window) : window{ window } {
         createInstance();
         setupDebugMessenger();
         createSurface();

@@ -1,27 +1,42 @@
 #include "AppOne.h"
+#include "DefaultRenderSystem.h"
+
+//libs
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include "glm/glm.hpp"
+#include "glm/gtc/constants.hpp"
+
 
 #include<stdexcept>
+#include <cassert>
 #include<array>
 
 namespace Dyna
 {
+
 	BasicApp::BasicApp()
 	{
-		loadModels();
-		createPipelineLayout();
-		createPipeline();
-		createCommandBuffers();
+		loadGameEntitys();
 	}
 	BasicApp::~BasicApp()
 	{
-		vkDestroyPipelineLayout(appDevice.device(), pipelineLayout, nullptr);
 	}
 	void BasicApp::run()
 	{
+		DefaultRenderSystem defaultRenderSystem{ appDevice, appRenderer.getSwapChainRenderPass() };
+
 		while (!appwindow.shouldClose())
 		{
 			glfwPollEvents();
-			drawFrame();
+
+			if (auto commandBuffer = appRenderer.beginFrame()) 
+			{
+				appRenderer.beginSwapChainRenderPass(commandBuffer);
+				defaultRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+				appRenderer.endSwapChainRenderPass(commandBuffer);
+				appRenderer.endFrame();
+			}
 		}
 
 		vkDeviceWaitIdle(appDevice.device());
@@ -42,115 +57,25 @@ namespace Dyna
 			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
 		}
 	}
-	void BasicApp::loadModels()
+	void BasicApp::loadGameEntitys()
 	{
-		/*std::vector<EngineModel::Vertex> vertices{
-			{{0.0f,-0.5f}},
-			{{0.5f, 0.5f}},
-			{{-0.5f,0.5f}}
-		};*/
-		std::vector<EngineModel::Vertex> vertices{};
-		sierpinski(vertices, 5, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });
-		appModel = std::make_unique<EngineModel>(appDevice, vertices);
+		std::vector<EngineModel::Vertex> vertices{
+			{{0.0f,-0.5f}, {1.0f,0.0f,0.0f}},
+			{{0.5f, 0.5f}, {0.0f,1.0f,0.0f}},
+			{{-0.5f,0.5f}, {0.0f,0.0f,1.0f}}
+		};
+		/*std::vector<EngineModel::Vertex> vertices{};
+		sierpinski(vertices, 0, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });*/
+		auto appModel = std::make_shared<EngineModel>(appDevice, vertices);
+
+		auto triangle = GameEntity::createGameEntity();
+		triangle.model = appModel;
+		triangle.color = { 0.1f,0.8f,0.1f };
+		triangle.transform2d.translation.x = .2f;
+		triangle.transform2d.scale = { 2.0f,0.5f };
+		triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+
+		gameObjects.push_back(std::move(triangle));
 	}
-	void BasicApp::createPipelineLayout()
-	{
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0;
-		pipelineLayoutInfo.pSetLayouts = nullptr;
-		pipelineLayoutInfo.pushConstantRangeCount = 0;
-		pipelineLayoutInfo.pPushConstantRanges = nullptr;
-		if (vkCreatePipelineLayout(appDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create pipeline Layout!");
-		}
-	}
-	void BasicApp::createPipeline()
-	{
-		PipelineConfigInfo pipelineConfig{};
-		Pipeline::defaultPipelineConfigInfo(
-			pipelineConfig,
-			appSwapChain.width(),
-			appSwapChain.height()
-		);
-		pipelineConfig.renderPass = appSwapChain.getRenderPass();
-		pipelineConfig.pipelineLayout = pipelineLayout;
-		appPipeline = std::make_unique<Pipeline>(
-			appDevice,
-			"shaders/Base_Shader.vert.spv",
-			"shaders/Base_Shader.frag.spv",
-			pipelineConfig
-			);
-	}
-	void BasicApp::createCommandBuffers()
-	{
-		commandBuffers.resize(appSwapChain.imageCount());
-
-		VkCommandBufferAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = appDevice.getCommandPool();
-		allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
-
-		if (vkAllocateCommandBuffers(appDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to allocate command Buffers!");
-		}
-
-		for (int i = 0; i < commandBuffers.size(); i++)
-		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-			if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS)
-			{
-				throw std::runtime_error("failed to begin recording command buffer!");
-			}
-
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = appSwapChain.getRenderPass();
-			renderPassInfo.framebuffer = appSwapChain.getFrameBuffer(i);
-
-			renderPassInfo.renderArea.offset = { 0,0 };
-			renderPassInfo.renderArea.extent = appSwapChain.getSwapChainExtent();
-
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0].color = { 0.1f,0.1f,0.1f,1.0f };
-			clearValues[1].depthStencil = { 1.0f, 0 };
-
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
-
-			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			appPipeline->bind(commandBuffers[i]);
-			appModel->bind(commandBuffers[i]);
-			appModel->draw(commandBuffers[i]);
-
-			vkCmdEndRenderPass(commandBuffers[i]);
-			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
-			{
-				throw std::runtime_error("failed To record command Buffer!");
-			}
-		}
-	}
-	void BasicApp::drawFrame()
-	{
-		uint32_t imageIndex;
-		auto result = appSwapChain.acquireNextImage(&imageIndex);
-
-		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-		{
-			throw std::runtime_error("failed To acquire swap chain image!");
-		}
-
-		result = appSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
-
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to present Swap chain Image!");
-		}
-	}
+	
 }
