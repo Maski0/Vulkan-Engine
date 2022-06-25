@@ -153,6 +153,7 @@
     <ClCompile Include="EngineCamera.cpp" />
     <ClCompile Include="EngineModel.cpp" />
     <ClCompile Include="EngineRenderer.cpp" />
+    <ClCompile Include="Keyboard_Movement_controller.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Vulkan_device.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineRenderer.h" />
     <ClInclude Include="GameEntity.h" />
+    <ClInclude Include="Keyboard_Movement_controller.h" />
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Vulkan_device.h" />

@@ -21,8 +21,10 @@ namespace Dyna
 
 		bool wasWindowResized() { return frameBufferResized; }
 		void resetWindowResizedFlag() { frameBufferResized = false; }
-
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
+		GLFWwindow* getGlfWwindow() const { return window; }
+
 	private:
 		static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
 		void initWindow();
@@ -34,6 +36,7 @@ namespace Dyna
 
 		std::string windowName;
 		GLFWwindow* window;
+		
 	};
 
 }

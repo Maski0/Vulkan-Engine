@@ -48,6 +48,9 @@
     <ClCompile Include="WindowsPlatformUtils\WindowsUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Keyboard_Movement_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\Base_shader.vert" />
@@ -88,6 +91,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WindowsPlatformUtils\PlatformUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard_Movement_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
