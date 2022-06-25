@@ -150,12 +150,14 @@
     <ClCompile Include="AppOne.cpp" />
     <ClCompile Include="DefaultRenderSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EngineCamera.cpp" />
     <ClCompile Include="EngineModel.cpp" />
     <ClCompile Include="EngineRenderer.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Vulkan_device.cpp" />
     <ClCompile Include="window.cpp" />
+    <ClCompile Include="WindowsPlatformUtils\WindowsUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
@@ -165,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="AppOne.h" />
     <ClInclude Include="DefaultRenderSystem.h" />
+    <ClInclude Include="EngineCamera.h" />
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineRenderer.h" />
     <ClInclude Include="GameEntity.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Vulkan_device.h" />
     <ClInclude Include="window.h" />
+    <ClInclude Include="WindowsPlatformUtils\PlatformUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

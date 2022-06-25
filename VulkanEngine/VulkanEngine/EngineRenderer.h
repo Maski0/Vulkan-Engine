@@ -20,6 +20,7 @@ namespace Dyna
 		EngineRenderer& operator=(const EngineRenderer&) = delete;
 
 		VkRenderPass getSwapChainRenderPass() const { return SwapChain->getRenderPass(); }
+		float getAspectRatio() const { return SwapChain->extentAspectRatio(); }
 		bool isFrameInProgress() const { return isFrameStarted; }
 
 		VkCommandBuffer getCurrentCommandBuffer() const {

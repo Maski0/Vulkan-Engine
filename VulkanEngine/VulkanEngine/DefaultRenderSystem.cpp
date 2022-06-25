@@ -30,9 +30,11 @@ namespace Dyna
 		vkDestroyPipelineLayout(eDevice.device(), pipelineLayout, nullptr);
 	}
 
-	void DefaultRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameEntity>& gameObjects)
+	void DefaultRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameEntity>& gameObjects, const Camera& camera)
 	{
 		ePipeline->bind(commandBuffer);
+
+		auto projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();
 
 		for (auto& obj : gameObjects) {
 			obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.001f, glm::two_pi<float>());
@@ -40,7 +42,7 @@ namespace Dyna
 
 			SimplePushConstantData push{};
 			push.color = obj.color;
-			push.transform = obj.transform.mat4();
+			push.transform = projectionView * obj.transform.mat4();
 
 			vkCmdPushConstants(
 				commandBuffer,

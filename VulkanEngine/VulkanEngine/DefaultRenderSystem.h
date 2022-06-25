@@ -2,6 +2,7 @@
 #include "Vulkan_device.h"
 #include "GameEntity.h"
 #include "pipeline.h"
+#include "EngineCamera.h"
 
 // std
 #include <memory>
@@ -19,7 +20,7 @@ namespace Dyna
 		DefaultRenderSystem& operator=(const DefaultRenderSystem&) = delete;
 
 
-		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameEntity>& gameObjects);
+		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameEntity>& gameObjects, const Camera& camera);
 
 	private:
 		void createPipelineLayout();
