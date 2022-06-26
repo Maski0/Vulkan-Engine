@@ -36,6 +36,8 @@ namespace Dyna
 		EngineDevice appDevice{ appwindow };
 		EngineRenderer appRenderer{ appwindow,appDevice };
 
+		std::string ModelFilePath;
+
 		std::vector<GameEntity> gameObjects;
 
 	};

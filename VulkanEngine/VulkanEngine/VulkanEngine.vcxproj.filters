@@ -96,5 +96,8 @@
     <ClInclude Include="Keyboard_Movement_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

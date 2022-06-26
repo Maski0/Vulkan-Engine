@@ -171,6 +171,7 @@
     <ClInclude Include="EngineCamera.h" />
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineRenderer.h" />
+    <ClInclude Include="Engine_utils.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="Keyboard_Movement_controller.h" />
     <ClInclude Include="pipeline.h" />

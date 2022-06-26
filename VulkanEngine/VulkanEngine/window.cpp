@@ -39,6 +39,10 @@ namespace Dyna
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 		window = glfwCreateWindow(WIDTH, HEIGHT, windowName.c_str(), nullptr, nullptr);
+
+		//GLFWimage icon[1];
+		//icon[0].pixels = 
+		//glfwSetWindowIcon(window,1,)
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 	}
